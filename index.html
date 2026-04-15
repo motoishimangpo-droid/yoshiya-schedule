@@ -2134,7 +2134,6 @@ async function gistSave(silent=false){
       localStorage.setItem('yoshiya_gist_id',data.id);
       const now=new Date();
       const timeStr=`${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
-      _isDirty=false;
       // Gist ID를 data 안에도 저장
       db._gistId=data.id;
       localStorage.setItem('yoshiya7',JSON.stringify(db));
