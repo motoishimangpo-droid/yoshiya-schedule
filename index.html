@@ -3886,9 +3886,28 @@ function stopClock(){if(clockTimer){clearInterval(clockTimer);clockTimer=null;}}
   curMonthYear={year:n.getFullYear(),month:n.getMonth()};
   curSummaryMY={year:n.getFullYear(),month:n.getMonth()};
   curMonthlyStatusMY={year:n.getFullYear(),month:n.getMonth()};
-  // ── Gist 먼저 로드 후 렌더 ──────────────────
   renderSchedule();renderStaff();
 
+  // ── 시작 시 Gist 자동 로드 ──────────────────
+  (async()=>{
+    const {token,gistId}=getGistConfig();
+    if(!token||!gistId)return;
+    try{
+      const res=await fetch(`https://api.github.com/gists/${gistId}`,{
+        headers:{'Authorization':`token ${token}`,'Cache-Control':'no-cache'}
+      });
+      if(!res.ok)return;
+      const data=await res.json();
+      const fc=data.files?.[GIST_FILE]?.content;
+      if(!fc)return;
+      const remote=JSON.parse(fc);
+      Object.assign(db,remote);
+      localStorage.setItem('yoshiya7',JSON.stringify(db));
+      refreshAllTabs();
+      setGistStatus('✅ 동기화 완료','var(--green)');
+      setTimeout(()=>setGistStatus('',''),3000);
+    }catch(e){}
+  })();
 
 })();
 
